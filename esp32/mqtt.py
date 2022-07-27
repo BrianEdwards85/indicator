@@ -14,6 +14,7 @@ class MQTT_Client:
     self.id = id
     self.time = time
     self.wifi = wifi
+    self.mac = mac
 
   def payload(self, type, obj):
     base = {
@@ -50,6 +51,7 @@ class MQTT_Client:
       password=secrets["mqtt_pw"],
       socket_pool=self.pool,
       ssl_context=ssl.create_default_context(),
+      client_id="esp32s2_%s" % self.id.replace(':', '-'),
     )
 
     self.mqtt_client.on_connect = self.connected
