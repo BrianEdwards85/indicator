@@ -1,5 +1,6 @@
 import board
 from microcontroller import watchdog as w
+from microcontroller import nvm
 from watchdog import WatchDogMode
 import circuitpython_schedule as schedule
 
@@ -22,7 +23,9 @@ neokeys = NeoKeys(i2c_bus)
 display = Display(env, ntp_time)
 
 #Global Mutable State
-button_state = 2
+button_state = nvm[0]
+if button_state < 0 or button_state > 3:
+  button_state = 2
 last_ts = ntp_time.now()
 
 def tick():
@@ -37,6 +40,7 @@ schedule.every().hour.do(ntp_time.sync_time)
 
 def set_state(new_state):
   global button_state
+  nvm[0] = new_state
   if button_state != new_state:
     mqtt.button_event(new_state, button_state)
     last_ts = ntp_time.now()
